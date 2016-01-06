@@ -7,38 +7,40 @@ import math
 
 PI = 3.14159265359
 
-phase = 1.6					#variables that define starting values
-afreq = 7					  #for oscillators
+#variables that define starting values for oscillators
+phase = 1.6					
+afreq = 7					  
 amp = 50					
 gait = 0   					
 
-t = 0						    #oscillator independant variable
-sine_time = 0.05 		#time in seconds for oscillators to wait before transmitting current positions
+#oscillator independant variable
+t = 0	
+#time in seconds for oscillators to wait before transmitting current positions
+sine_time = 0.05 		
 elapsed_time = 0
 
+#front and back joint offsets
 bfk_offset = 0
 bbk_offset = 0
-
-bf_offset = 0					#front and back hip offsets for each gait
+bf_offset = 0					
 bb_offset = 0
-tf_offset = 0
-tb_offset = 0
-wf_offset = 0
-wb_offset = 0
 
-bb = serial.Serial('/dev/rfcomm0', 115200)	#serial port for botboard communication
+#serial port for botboard communication
+bb = serial.Serial('/dev/rfcomm0', 115200)	
 print(bb.name)
 
-start_time = time.time() 			#start the oscillator timer
+#start the oscillator timer
+start_time = time.time() 			
 
-def get_time():					      #function to obtain current time
+#function to obtain current time
+def get_time():					      
   return time.time()
 
 #####################################################################################################################
 #############################                  OSCILLATORS                   ########################################
 #####################################################################################################################
 
-def trot():
+def oscillate(gselector):
   #variables which allow sine wave parameters to be changed via a gui interface
   global t, PI, start_time, elapsed_time, bf_offset, bb_offset, amp, afreq, phase, bbk_offset, bfk_offset
 
@@ -49,13 +51,13 @@ def trot():
   #sine waves generate servo positions for each joint of the robot
   pos[0] = (int(amp) * math.sin(int(afreq)*t)) + 1500 + int(bf_offset)
   pos[1] = (int(amp) * math.sin(int(afreq)*t)) + 1522 - int(bf_offset)
-  pos[2] = (int(amp) * math.sin(int(afreq)*t - PI)) + 1500 + int(bb_offset)
-  pos[3] = (int(amp) * math.sin(int(afreq)*t - PI)) + 1446 - int(bb_offset)
+  pos[2] = (int(amp) * math.sin(int(afreq)*t + gselector)) + 1500 + int(bb_offset)
+  pos[3] = (int(amp) * math.sin(int(afreq)*t + gselector)) + 1446 - int(bb_offset)
  
   pos[4] = (int(amp) * math.sin(int(afreq)*t + float(phase))) + 1500 + int(bfk_offset)
   pos[5] = (int(amp) * math.sin(int(afreq)*t + float(phase))) + 1581 - int(bfk_offset)
-  pos[6] = (int(amp) * math.sin(int(afreq)*t - PI + float(phase))) + 1500 + int(bbk_offset)
-  pos[7] = (int(amp) * math.sin(int(afreq)*t - PI + float(phase))) + 1538 - int(bbk_offset)
+  pos[6] = (int(amp) * math.sin(int(afreq)*t + gselector + float(phase))) + 1500 + int(bbk_offset)
+  pos[7] = (int(amp) * math.sin(int(afreq)*t + gselector + float(phase))) + 1538 - int(bbk_offset)
   
   #get current time
   elapsed_time = get_time()
@@ -77,77 +79,7 @@ def trot():
      #bb.write('%d%d%d%d%d%d%d%d\n' % (SB,SF,HB,HF,EB,EF,KB,KF))
      print('%s%s%s%s%s%s%s%s\n' % (pos[0],pos[1],pos[2],pos[3],pos[4],pos[5],pos[6],pos[7]))
      bb.write('%s%s%s%s%s%s%s%s\n' % (pos[0],pos[1],pos[2],pos[3],pos[4],pos[5],pos[6],pos[7]))
-
-
-def walk():
-  global t, PI, afreq, start_time, elapsed_time, bf_offset, bb_offset, amp, phase, bfk_offset, bbk_offset
-
-  #positions = [SB,SF,HB,HF,EB,EF,KB,KF]
-  pos = [0,1,2,3,4,5,6,7]
-
-  pos[0] = (int(amp) * math.sin(int(afreq)*t + PI)) + 1500 + int(bf_offset)
-  pos[1] = (int(amp) * math.sin(int(afreq)*t + PI)) + 1522 - int(bf_offset)
-  pos[2] = (int(amp) * math.sin(int(afreq)*t + PI/2)) + 1500 + int(bb_offset)
-  pos[3] = (int(amp) * math.sin(int(afreq)*t + PI/2)) + 1446 - int(bb_offset)
-  
-  pos[4] = (int(amp) * math.sin(int(afreq)*t + PI - float(phase))) + 1500 + int(bfk_offset)
-  pos[5] = (int(amp) * math.sin(int(afreq)*t + PI - float(phase))) + 1581 - int(bfk_offset)
-  pos[6] = (int(amp) * math.sin(int(afreq)*t + PI/2 - float(phase))) + 1500 + int(bbk_offset)
-  pos[7] = (int(amp) * math.sin(int(afreq)*t + PI/2 - float(phase))) + 1538 - int(bbk_offset)
-  
-  elapsed_time = get_time()
-  
-  if (elapsed_time - start_time >= sine_time):
-     print ('time difference: %s' % (elapsed_time - start_time))
-     start_time = elapsed_time
-     t += 1
-
-     for i in range(len(pos)):
-       if (pos[i] < 1000):
-	 pos[i] = '0' + str(int(pos[i]))
-
-       else:
-	 pos[i] = str(int(pos[i]))
      
-     #bb.write('%d%d%d%d%d%d%d%d\n' % (SB,SF,HB,HF,EB,EF,KB,KF))
-     print('%s%s%s%s%s%s%s%s\n' % (pos[0],pos[1],pos[2],pos[3],pos[4],pos[5],pos[6],pos[7]))
-     bb.write('%s%s%s%s%s%s%s%s\n' % (pos[0],pos[1],pos[2],pos[3],pos[4],pos[5],pos[6],pos[7]))
-
-
-def pace():
-  global t, PI, afreq, start_time, elapsed_time, bf_offset, bb_offset, amp, phase, bfk_offset, bbk_offset
-
-  #positions = [SB,SF,HB,HF,EB,EF,KB,KF]
-  pos = [0,1,2,3,4,5,6,7]
-
-  pos[0] = (int(amp) * math.sin(int(afreq)*t)) + 1500 + int(bf_offset)
-  pos[1] = (int(amp) * math.sin(int(afreq)*t)) + 1522 - int(bf_offset)
-  pos[2] = (int(amp) * math.sin(int(afreq)*t)) + 1500 + int(bb_offset)
-  pos[3] = (int(amp) * math.sin(int(afreq)*t)) + 1446 - int(bb_offset)
-  
-  pos[4] = (int(amp) * math.sin(int(afreq)*t + float(phase))) + 1500 + int(bfk_offset)
-  pos[5] = (int(amp) * math.sin(int(afreq)*t + float(phase))) + 1581 - int(bfk_offset)
-  pos[6] = (int(amp) * math.sin(int(afreq)*t + float(phase))) + 1500 + int(bbk_offset)
-  pos[7] = (int(amp) * math.sin(int(afreq)*t + float(phase))) + 1538 - int(bbk_offset)
-  
-  elapsed_time = get_time()
-  
-  if (elapsed_time - start_time >= sine_time):
-     print ('time difference: %s' % (elapsed_time - start_time))
-     start_time = elapsed_time
-     t += 1
-
-     for i in range(len(pos)):
-       if (pos[i] < 1000):
-	 pos[i] = '0' + str(int(pos[i]))
-
-       else:
-	 pos[i] = str(int(pos[i]))
-     
-     #bb.write('%d%d%d%d%d%d%d%d\n' % (SB,SF,HB,HF,EB,EF,KB,KF))
-     print('%s%s%s%s%s%s%s%s\n' % (pos[0],pos[1],pos[2],pos[3],pos[4],pos[5],pos[6],pos[7]))
-     bb.write('%s%s%s%s%s%s%s%s\n' % (pos[0],pos[1],pos[2],pos[3],pos[4],pos[5],pos[6],pos[7]))
-
 
 ############################################################################################################
 ################################        INTERMEDIATES         ##############################################
@@ -168,20 +100,6 @@ def pace_button(event):
   global gait
   gait = 3
   return 3
-
-def loop():				#main execution loop of the program, choose gait based on number
-  global gait
-  if (gait == 1):
-    walk()
-
-  elif (gait == 2):
-    trot()
-
-  elif (gait == 3):
-    pace()
-  
-  root.after(int(sine_time*1000),loop) 
-
 
 #functions to obtain values returned from gui sliders
 def set_bound_phase(val):
@@ -215,6 +133,23 @@ def set_bound_boffset(val):
 def set_sine_time(val):
   global sine_time
   sine_time = val
+  
+#main execution loop of the program, choose gait based on number
+def loop():				
+  global gait
+  if (gait == 1):
+    gselector = PI/2
+    oscillate(gselector)
+
+  elif (gait == 2):
+    gselector = -PI
+    oscillate(gselector)
+
+  elif (gait == 3):
+    gselector = 0
+    oscillate(gselector)
+  
+  root.after(int(sine_time*1000),loop)
 
 ########################################################################################################
 #################################    	        GUI            ###########################################
@@ -225,25 +160,22 @@ class App:
     frame = Frame(master)
     frame.pack()
 
-    #############################               WALK           ##################################
-
+    #walk button
     self.walk = Button(frame, text="Walk")
     self.walk.bind("1", walk_button)
     self.walk.pack(side=LEFT)
-
-    ##############################              TROT           #################################
-
+    
+    #trot button
     self.trot = Button(frame, text="Trot")
     self.trot.bind("2", trot_button)
     self.trot.pack(side=LEFT)
 
-    ###############################             BOUND           ################################
-    global phase
-
+    #pace button
     self.pace = Button(frame, text="Pace")
     self.pace.bind("3", pace_button)
     self.pace.pack(side=LEFT)
-
+    
+    #various sliders to control sine waves
     bound_phase = Scale(
       master, from_=0, to=3.14, orient=HORIZONTAL, resolution=0.01, sliderlength=50,  length=200, label="Phase", command=set_bound_phase)
     bound_phase.set(3.14)

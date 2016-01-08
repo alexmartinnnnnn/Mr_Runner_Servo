@@ -131,9 +131,9 @@ def set_boffset(val):
   global b_offset
   b_offset = val
 
-def set_sine_time(val):
-  global sine_time
-  sine_time = val
+#def set_sine_time(val):
+#  global sine_time
+#  sine_time = val
   
 #main execution loop of the program, choose gait based on number
 def loop():				

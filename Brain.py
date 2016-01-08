@@ -7,23 +7,24 @@ import math
 
 PI = 3.14159265359
 
-#variables that define starting values for oscillators
-phase = 1.6					
-afreq = 7					  
-amp = 50					
-gait = 0   					
+#independant variable for sine waves
+t = 0
 
-#oscillator independant variable
-t = 0	
 #time in seconds for oscillators to wait before transmitting current positions
 sine_time = 0.05 		
 elapsed_time = 0
 
+#oscillator control variables
+phase = 0					
+afreq = 0					  
+amp = 0					
+gait = 0  
+
 #front and back joint offsets
-bfk_offset = 0
-bbk_offset = 0
-bf_offset = 0					
-bb_offset = 0
+fk_offset = 0
+bk_offset = 0
+f_offset = 0					
+b_offset = 0
 
 #serial port for botboard communication
 bb = serial.Serial('/dev/rfcomm0', 115200)	
@@ -42,22 +43,22 @@ def get_time():
 
 def oscillate(gselector):
   #variables which allow sine wave parameters to be changed via a gui interface
-  global t, PI, start_time, elapsed_time, bf_offset, bb_offset, amp, afreq, phase, bbk_offset, bfk_offset
+  global t, start_time, elapsed_time, f_offset, b_offset, amp, afreq, phase, bk_offset, fk_offset
 
   #array to hold the servo positions
   #positions = [SB,SF,HB,HF,EB,EF,KB,KF]
   pos = [0,1,2,3,4,5,6,7]
 
   #sine waves generate servo positions for each joint of the robot
-  pos[0] = (int(amp) * math.sin(int(afreq)*t)) + 1500 + int(bf_offset)
-  pos[1] = (int(amp) * math.sin(int(afreq)*t)) + 1522 - int(bf_offset)
-  pos[2] = (int(amp) * math.sin(int(afreq)*t + gselector)) + 1500 + int(bb_offset)
-  pos[3] = (int(amp) * math.sin(int(afreq)*t + gselector)) + 1446 - int(bb_offset)
+  pos[0] = (int(amp) * math.sin(int(afreq)*t)) + 1500 + int(f_offset)
+  pos[1] = (int(amp) * math.sin(int(afreq)*t)) + 1522 - int(f_offset)
+  pos[2] = (int(amp) * math.sin(int(afreq)*t + gselector)) + 1500 + int(b_offset)
+  pos[3] = (int(amp) * math.sin(int(afreq)*t + gselector)) + 1446 - int(b_offset)
  
-  pos[4] = (int(amp) * math.sin(int(afreq)*t + float(phase))) + 1500 + int(bfk_offset)
-  pos[5] = (int(amp) * math.sin(int(afreq)*t + float(phase))) + 1581 - int(bfk_offset)
-  pos[6] = (int(amp) * math.sin(int(afreq)*t + gselector + float(phase))) + 1500 + int(bbk_offset)
-  pos[7] = (int(amp) * math.sin(int(afreq)*t + gselector + float(phase))) + 1538 - int(bbk_offset)
+  pos[4] = (int(amp) * math.sin(int(afreq)*t + float(phase))) + 1500 + int(fk_offset)
+  pos[5] = (int(amp) * math.sin(int(afreq)*t + float(phase))) + 1581 - int(fk_offset)
+  pos[6] = (int(amp) * math.sin(int(afreq)*t + gselector + float(phase))) + 1500 + int(bk_offset)
+  pos[7] = (int(amp) * math.sin(int(afreq)*t + gselector + float(phase))) + 1538 - int(bk_offset)
   
   #get current time
   elapsed_time = get_time()
@@ -102,33 +103,33 @@ def pace_button(event):
   return 3
 
 #functions to obtain values returned from gui sliders
-def set_bound_phase(val):
+def set_phase(val):
   global phase
   phase = val
 
-def set_bound_amp(val):
+def set_amp(val):
   global amp
   amp = val
 
-def set_bound_afreq(val):
+def set_afreq(val):
   global afreq
   afreq = val
 
-def set_bound_fkoffset(val):
-  global bfk_offset
-  bfk_offset = val
+def set_fkoffset(val):
+  global fk_offset
+  fk_offset = val
 
-def set_bound_bkoffset(val):
-  global bbk_offset
-  bbk_offset = val
+def set_bkoffset(val):
+  global bk_offset
+  bk_offset = val
 
-def set_bound_foffset(val):
-  global bf_offset
-  bf_offset = val
+def set_foffset(val):
+  global f_offset
+  f_offset = val
 
-def set_bound_boffset(val):
-  global bb_offset
-  bb_offset = val
+def set_boffset(val):
+  global b_offset
+  b_offset = val
 
 def set_sine_time(val):
   global sine_time
@@ -176,40 +177,40 @@ class App:
     self.pace.pack(side=LEFT)
     
     #various sliders to control sine waves
-    bound_phase = Scale(
-      master, from_=0, to=3.14, orient=HORIZONTAL, resolution=0.01, sliderlength=50,  length=200, label="Phase", command=set_bound_phase)
-    bound_phase.set(3.14)
-    bound_phase.pack()
+    self.phase = Scale(
+      master, from_=0, to=3.14, orient=HORIZONTAL, resolution=0.01, sliderlength=50,  length=200, label="Phase", command=set_phase)
+    self.phase.set(3.14)
+    self.phase.pack()
 
-    bound_amp = Scale(
-      master, from_=0, to=300, orient=HORIZONTAL, sliderlength=50,  length=200, label="Amplitude", command=set_bound_amp)
-    bound_amp.set(150)
-    bound_amp.pack()
+    self.amp = Scale(
+      master, from_=0, to=300, orient=HORIZONTAL, sliderlength=50,  length=200, label="Amplitude", command=set_amp)
+    self.amp.set(150)
+    self.amp.pack()
 
-    bound_afreq = Scale(
-      master, from_=0, to=20, orient=HORIZONTAL, sliderlength=50, length=200, label="Angular Frequency", command=set_bound_afreq)
-    bound_afreq.set(1)
-    bound_afreq.pack()
+    self.afreq = Scale(
+      master, from_=0, to=20, orient=HORIZONTAL, sliderlength=50, length=200, label="Angular Frequency", command=set_afreq)
+    self.afreq.set(1)
+    self.afreq.pack()
 
-    bound_fkoffset = Scale(
-      master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Front Knee Offset", command=set_bound_fkoffset)
-    bound_fkoffset.set(-350)
-    bound_fkoffset.pack()
+    self.fkoffset = Scale(
+      master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Front Knee Offset", command=set_fkoffset)
+    self.fkoffset.set(-350)
+    self.fkoffset.pack()
 
-    bound_bkoffset = Scale(
-      master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Back Knee Offset", command=set_bound_bkoffset)
-    bound_bkoffset.set(-350)
-    bound_bkoffset.pack()
+    self.bkoffset = Scale(
+      master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Back Knee Offset", command=set_bkoffset)
+    self.bkoffset.set(-350)
+    selfbkoffset.pack()
 
-    bound_foffset = Scale(
-      master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Front Offset", command=set_bound_foffset)
-    bound_foffset.set(232)
-    bound_foffset.pack()
+    self.foffset = Scale(
+      master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Front Offset", command=set_foffset)
+    self.foffset.set(232)
+    self.foffset.pack()
 
-    bound_boffset = Scale(
-      master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Rear Offset", command=set_bound_boffset)
-    bound_boffset.set(108)
-    bound_boffset.pack()
+    self.boffset = Scale(
+      master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Rear Offset", command=set_boffset)
+    self.boffset.set(108)
+    self.boffset.pack()
 
 #    sine_btime = Scale(
 #      master, from_=0, to=0.1, orient=HORIZONTAL, sliderlength=50, length=200, resolution=0.01, label= "Sine Time", command=set_sine_time)

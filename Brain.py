@@ -86,55 +86,6 @@ def oscillate(gselector):
 ######################################################################################################################
 ##########################################        INTERMEDIATES         ##############################################
 ######################################################################################################################
-
-#change "gait" variable based on button selected from the gui
-def walk_button(event):
-  global gait
-  gait = 1
-  return 1
-
-def trot_button(event):
-  global gait
-  gait = 2
-  return 2
-
-def pace_button(event):
-  global gait
-  gait = 3
-  return 3
-
-#functions to obtain values returned from gui sliders
-def set_phase(val):
-  global phase
-  phase = val
-
-def set_amp(val):
-  global amp
-  amp = val
-
-def set_afreq(val):
-  global afreq
-  afreq = val
-
-def set_fkoffset(val):
-  global fk_offset
-  fk_offset = val
-
-def set_bkoffset(val):
-  global bk_offset
-  bk_offset = val
-
-def set_foffset(val):
-  global f_offset
-  f_offset = val
-
-def set_boffset(val):
-  global b_offset
-  b_offset = val
-
-def set_knee_amp(val):
-  global knee_amp
-  knee_amp = val
   
 #main execution loop of the program, choose gait based on number
 def loop():				
@@ -164,60 +115,107 @@ class App:
 
     #walk button
     self.walk = Button(frame, text="Walk")
-    self.walk.bind("1", walk_button)
+    self.walk.bind("1", self.walk_button)
     self.walk.pack(side=LEFT)
     
     #trot button
     self.trot = Button(frame, text="Trot")
-    self.trot.bind("2", trot_button)
+    self.trot.bind("2", self.trot_button)
     self.trot.pack(side=LEFT)
 
     #pace button
     self.pace = Button(frame, text="Pace")
-    self.pace.bind("3", pace_button)
+    self.pace.bind("3", self.pace_button)
     self.pace.pack(side=LEFT)
     
     #various sliders to control sine waves
     self.phase = Scale(
-      master, from_=0, to=3.14, orient=HORIZONTAL, resolution=0.01, sliderlength=50,  length=200, label="Phase", command=set_phase)
+      master, from_=0, to=3.14, orient=HORIZONTAL, resolution=0.01, sliderlength=50,  length=200, label="Phase", command=self.set_phase)
     self.phase.set(3.14)
     self.phase.pack()
 
     self.amp = Scale(
-      master, from_=0, to=300, orient=HORIZONTAL, sliderlength=50,  length=200, label="Hip Amplitude", command=set_amp)
+      master, from_=0, to=300, orient=HORIZONTAL, sliderlength=50,  length=200, label="Hip Amplitude", command=self.set_amp)
     self.amp.set(150)
     self.amp.pack()
 
     self.knee_amp = Scale(
-      master, from_=0, to=4, orient=HORIZONTAL, sliderlength=50, length=200, resolution=0.01, label= "Knee Amplitude", command=set_knee_amp)
+      master, from_=0, to=4, orient=HORIZONTAL, sliderlength=50, length=200, resolution=0.01, label= "Knee Amplitude", command=self.set_knee_amp)
     self.knee_amp.set(1)
     self.knee_amp.pack()
 
     self.afreq = Scale(
-      master, from_=0, to=20, orient=HORIZONTAL, sliderlength=50, length=200, label="Angular Frequency", command=set_afreq)
+      master, from_=0, to=20, orient=HORIZONTAL, sliderlength=50, length=200, label="Angular Frequency", command=self.set_afreq)
     self.afreq.set(1)
     self.afreq.pack()
 
     self.fkoffset = Scale(
-      master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Front Knee Offset", command=set_fkoffset)
+      master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Front Knee Offset", command=self.set_fkoffset)
     self.fkoffset.set(0)
     self.fkoffset.pack()
 
     self.bkoffset = Scale(
-      master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Back Knee Offset", command=set_bkoffset)
+      master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Back Knee Offset", command=self.set_bkoffset)
     self.bkoffset.set(0)
     self.bkoffset.pack()
 
     self.foffset = Scale(
-      master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Front Offset", command=set_foffset)
+      master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Front Offset", command=self.set_foffset)
     self.foffset.set(232)
     self.foffset.pack()
 
     self.boffset = Scale(
-      master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Rear Offset", command=set_boffset)
+      master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Rear Offset", command=self.set_boffset)
     self.boffset.set(108)
     self.boffset.pack()
+    
+    #change "gait" variable based on button selected from the gui
+    def walk_button(self, event):
+      global gait
+      gait = 1
 
+    def trot_button(self, event):
+      global gait
+      gait = 2
+
+    def pace_button(self, event):
+      global gait
+      gait = 3
+
+    #functions to obtain values returned from gui sliders
+    def set_phase(self, event):
+      global phase
+      phase = event
+
+    def set_amp(self, event):
+      global amp
+      amp = event
+
+    def set_afreq(self, event):
+      global afreq
+      afreq = event
+
+    def set_fkoffset(self, event):
+      global fk_offset
+      fk_offset = event
+
+    def set_bkoffset(self, event):
+      global bk_offset
+      bk_offset = event
+
+    def set_foffset(self, event):
+      global f_offset
+      f_offset = event
+
+    def set_boffset(self, event):
+      global b_offset
+      b_offset = val
+
+    def set_knee_amp(self, event):
+      global knee_amp
+      knee_amp = val
+
+    
 
 #########################################################################################################################
 #######################################               MAIN PROGRAM             ##########################################

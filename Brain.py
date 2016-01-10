@@ -110,21 +110,21 @@ def loop():
 
 class App:
   def __init__(self, master):
-    frame = Frame(master)
-    frame.pack()
+    self.frame = Frame(master)
+    self.frame.pack()
 
     #walk button
-    self.walk = Button(frame, text="Walk")
-    self.walk.bind("1", self.walk_button)
+    self.walk = Button(self.frame, text="Walk")
     self.walk.pack(side=LEFT)
-    
+    self.walk.bind("1", self.walk_button)
+
     #trot button
-    self.trot = Button(frame, text="Trot")
+    self.trot = Button(self.frame, text="Trot")
     self.trot.bind("2", self.trot_button)
     self.trot.pack(side=LEFT)
 
     #pace button
-    self.pace = Button(frame, text="Pace")
+    self.pace = Button(self.frame, text="Pace")
     self.pace.bind("3", self.pace_button)
     self.pace.pack(side=LEFT)
     
@@ -169,51 +169,51 @@ class App:
     self.boffset.set(108)
     self.boffset.pack()
     
-    #change "gait" variable based on button selected from the gui
-    def walk_button(self, event):
-      global gait
-      gait = 1
+  #change "gait" variable based on button selected from the gui
+  def walk_button(self, event):
+    global gait
+    gait = 1
 
-    def trot_button(self, event):
-      global gait
-      gait = 2
+  def trot_button(self, event):
+    global gait
+    gait = 2
 
-    def pace_button(self, event):
-      global gait
-      gait = 3
+  def pace_button(self, event):
+    global gait
+    gait = 3
 
-    #functions to obtain values returned from gui sliders
-    def set_phase(self, event):
-      global phase
-      phase = event
+  #functions to obtain values returned from gui sliders
+  def set_phase(self, event):
+    global phase
+    phase = event
 
-    def set_amp(self, event):
-      global amp
-      amp = event
+  def set_amp(self, event):
+    global amp
+    amp = event
 
-    def set_afreq(self, event):
-      global afreq
-      afreq = event
+  def set_afreq(self, event):
+    global afreq
+    afreq = event
 
-    def set_fkoffset(self, event):
-      global fk_offset
-      fk_offset = event
+  def set_fkoffset(self, event):
+    global fk_offset
+    fk_offset = event
 
-    def set_bkoffset(self, event):
-      global bk_offset
-      bk_offset = event
+  def set_bkoffset(self, event):
+    global bk_offset
+    bk_offset = event
 
-    def set_foffset(self, event):
-      global f_offset
-      f_offset = event
+  def set_foffset(self, event):
+    global f_offset
+    f_offset = event
 
-    def set_boffset(self, event):
-      global b_offset
-      b_offset = val
+  def set_boffset(self, event):
+    global b_offset
+    b_offset = val
 
-    def set_knee_amp(self, event):
-      global knee_amp
-      knee_amp = val
+  def set_knee_amp(self, event):
+    global knee_amp
+    knee_amp = val
 
     
 

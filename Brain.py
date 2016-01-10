@@ -19,6 +19,7 @@ phase = 0
 afreq = 0					  
 amp = 0					
 gait = 0  
+knee_amp = 0
 
 #front and back joint offsets
 fk_offset = 0
@@ -43,7 +44,7 @@ def get_time():
 
 def oscillate(gselector):
   #variables which allow sine wave parameters to be changed via a gui interface
-  global t, start_time, elapsed_time, f_offset, b_offset, amp, afreq, phase, bk_offset, fk_offset
+  global t, start_time, elapsed_time, f_offset, b_offset, amp, knee_amp, afreq, phase, bk_offset, fk_offset
 
   #array to hold the servo positions
   #positions = [SB,SF,HB,HF,EB,EF,KB,KF]
@@ -55,10 +56,10 @@ def oscillate(gselector):
   pos[2] = (int(amp) * math.sin(int(afreq)*t + gselector)) + 1500 + int(b_offset)
   pos[3] = (int(amp) * math.sin(int(afreq)*t + gselector)) + 1446 - int(b_offset)
  
-  pos[4] = (int(amp) * math.sin(int(afreq)*t + float(phase))) + 1500 + int(fk_offset)
-  pos[5] = (int(amp) * math.sin(int(afreq)*t + float(phase))) + 1581 - int(fk_offset)
-  pos[6] = (int(amp) * math.sin(int(afreq)*t + gselector + float(phase))) + 1500 + int(bk_offset)
-  pos[7] = (int(amp) * math.sin(int(afreq)*t + gselector + float(phase))) + 1538 - int(bk_offset)
+  pos[4] = (int(amp)*float(knee_amp) * math.sin(int(afreq)*t + float(phase))) + 1500 + int(fk_offset)
+  pos[5] = (int(amp)*float(knee_amp) * math.sin(int(afreq)*t + float(phase))) + 1581 - int(fk_offset)
+  pos[6] = (int(amp)*float(knee_amp) * math.sin(int(afreq)*t + gselector + float(phase))) + 1500 + int(bk_offset)
+  pos[7] = (int(amp)*float(knee_amp) * math.sin(int(afreq)*t + gselector + float(phase))) + 1538 - int(bk_offset)
   
   #get current time
   elapsed_time = get_time()
@@ -131,9 +132,9 @@ def set_boffset(val):
   global b_offset
   b_offset = val
 
-#def set_sine_time(val):
-#  global sine_time
-#  sine_time = val
+def set_knee_amp(val):
+  global knee_amp
+  knee_amp = val
   
 #main execution loop of the program, choose gait based on number
 def loop():				
@@ -183,9 +184,14 @@ class App:
     self.phase.pack()
 
     self.amp = Scale(
-      master, from_=0, to=300, orient=HORIZONTAL, sliderlength=50,  length=200, label="Amplitude", command=set_amp)
+      master, from_=0, to=300, orient=HORIZONTAL, sliderlength=50,  length=200, label="Hip Amplitude", command=set_amp)
     self.amp.set(150)
     self.amp.pack()
+
+    self.knee_amp = Scale(
+      master, from_=0, to=4, orient=HORIZONTAL, sliderlength=50, length=200, resolution=0.01, label= "Knee Amplitude", command=set_knee_amp)
+    self.knee_amp.set(1)
+    self.knee_amp.pack()
 
     self.afreq = Scale(
       master, from_=0, to=20, orient=HORIZONTAL, sliderlength=50, length=200, label="Angular Frequency", command=set_afreq)
@@ -194,13 +200,13 @@ class App:
 
     self.fkoffset = Scale(
       master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Front Knee Offset", command=set_fkoffset)
-    self.fkoffset.set(-350)
+    self.fkoffset.set(0)
     self.fkoffset.pack()
 
     self.bkoffset = Scale(
       master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Back Knee Offset", command=set_bkoffset)
-    self.bkoffset.set(-350)
-    selfbkoffset.pack()
+    self.bkoffset.set(0)
+    self.bkoffset.pack()
 
     self.foffset = Scale(
       master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Front Offset", command=set_foffset)
@@ -212,10 +218,6 @@ class App:
     self.boffset.set(108)
     self.boffset.pack()
 
-#    sine_btime = Scale(
-#      master, from_=0, to=0.1, orient=HORIZONTAL, sliderlength=50, length=200, resolution=0.01, label= "Sine Time", command=set_sine_time)
-#    sine_btime.set(0.08)
-#    sine_btime.pack()
 
 #########################################################################################################################
 #######################################               MAIN PROGRAM             ##########################################

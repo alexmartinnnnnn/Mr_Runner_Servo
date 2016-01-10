@@ -14,19 +14,6 @@ t = 0
 sine_time = 0.05 		
 elapsed_time = 0
 
-#oscillator control variables
-phase = 0					
-afreq = 0					  
-amp = 0					
-gait = 0  
-knee_amp = 0
-
-#front and back joint offsets
-fk_offset = 0
-bk_offset = 0
-f_offset = 0					
-b_offset = 0
-
 #serial port for botboard communication
 bb = serial.Serial('/dev/rfcomm0', 115200)	
 print(bb.name)
@@ -38,71 +25,6 @@ start_time = time.time()
 def get_time():					      
   return time.time()
 
-###########################################################################################################################
-###################################                 OSCILLATORS                   #########################################
-###########################################################################################################################
-
-def oscillate(gselector):
-  #variables which allow sine wave parameters to be changed via a gui interface
-  global t, start_time, elapsed_time, f_offset, b_offset, amp, knee_amp, afreq, phase, bk_offset, fk_offset
-
-  #array to hold the servo positions
-  #positions = [SB,SF,HB,HF,EB,EF,KB,KF]
-  pos = [0,1,2,3,4,5,6,7]
-
-  #sine waves generate servo positions for each joint of the robot
-  pos[0] = (int(amp) * math.sin(int(afreq)*t)) + 1500 + int(f_offset)
-  pos[1] = (int(amp) * math.sin(int(afreq)*t)) + 1522 - int(f_offset)
-  pos[2] = (int(amp) * math.sin(int(afreq)*t + gselector)) + 1500 + int(b_offset)
-  pos[3] = (int(amp) * math.sin(int(afreq)*t + gselector)) + 1446 - int(b_offset)
- 
-  pos[4] = (int(amp)*float(knee_amp) * math.sin(int(afreq)*t + float(phase))) + 1500 + int(fk_offset)
-  pos[5] = (int(amp)*float(knee_amp) * math.sin(int(afreq)*t + float(phase))) + 1581 - int(fk_offset)
-  pos[6] = (int(amp)*float(knee_amp) * math.sin(int(afreq)*t + gselector + float(phase))) + 1500 + int(bk_offset)
-  pos[7] = (int(amp)*float(knee_amp) * math.sin(int(afreq)*t + gselector + float(phase))) + 1538 - int(bk_offset)
-  
-  #get current time
-  elapsed_time = get_time()
-  
-  if (elapsed_time - start_time >= sine_time):
-     print ('time difference: %s' % (elapsed_time - start_time))
-     start_time = elapsed_time
-     t += 1
-
-     #format servo positions properly
-     for i in range(len(pos)):
-       if (pos[i] < 1000):
-	 pos[i] = '0' + str(int(pos[i]))
-
-       else:
-	 pos[i] = str(int(pos[i]))
-     
-     #transmit servo positions over serial connection
-     #bb.write('%d%d%d%d%d%d%d%d\n' % (SB,SF,HB,HF,EB,EF,KB,KF))
-     print('%s%s%s%s%s%s%s%s\n' % (pos[0],pos[1],pos[2],pos[3],pos[4],pos[5],pos[6],pos[7]))
-     bb.write('%s%s%s%s%s%s%s%s\n' % (pos[0],pos[1],pos[2],pos[3],pos[4],pos[5],pos[6],pos[7]))
-     
-
-######################################################################################################################
-##########################################        INTERMEDIATES         ##############################################
-######################################################################################################################
-  
-#main execution loop of the program, choose gait based on number
-def loop():				
-  global gait
-  if (gait == 1):
-    gselector = PI/2
-    oscillate(gselector)
-
-  elif (gait == 2):
-    gselector = -PI
-    oscillate(gselector)
-
-  elif (gait == 3):
-    gselector = 0
-    oscillate(gselector)
-  
-  root.after(int(sine_time*1000),loop)
 
 ########################################################################################################################
 ###########################################             GUI            #################################################
@@ -110,6 +32,20 @@ def loop():
 
 class App:
   def __init__(self, master):
+    #oscillator control variables
+    self.phase = 0					
+    self.afreq = 0					  
+    self.amp = 0					
+    self.gait = 0  
+    self.knee_amp = 0
+    self.gselector = 0
+
+    #front and back joint offsets
+    self.fk_offset = 0
+    self.bk_offset = 0
+    self.f_offset = 0					
+    self.b_offset = 0
+
     self.frame = Frame(master)
     self.frame.pack()
 
@@ -171,50 +107,80 @@ class App:
     
   #change "gait" variable based on button selected from the gui
   def walk_button(self, event):
-    global gait
-    gait = 1
+    self.gait = PI/2
 
   def trot_button(self, event):
-    global gait
-    gait = 2
+    self.gait = -PI
 
   def pace_button(self, event):
-    global gait
-    gait = 3
+    self.gait = 0
 
   #functions to obtain values returned from gui sliders
   def set_phase(self, event):
-    global phase
-    phase = event
+    self.phase = event
 
   def set_amp(self, event):
-    global amp
-    amp = event
+    self.amp = event
 
   def set_afreq(self, event):
-    global afreq
-    afreq = event
+    self.afreq = event
 
   def set_fkoffset(self, event):
-    global fk_offset
-    fk_offset = event
+    self.fk_offset = event
 
   def set_bkoffset(self, event):
-    global bk_offset
-    bk_offset = event
+    self.bk_offset = event
 
   def set_foffset(self, event):
-    global f_offset
-    f_offset = event
+    self.f_offset = event
 
   def set_boffset(self, event):
-    global b_offset
-    b_offset = val
+    self.b_offset = val
 
   def set_knee_amp(self, event):
-    global knee_amp
-    knee_amp = val
+    self.knee_amp = val
 
+  def oscillate(self):
+    #variables which allow sine wave parameters to be changed via a gui interface
+    global t, start_time, elapsed_time
+
+    #array to hold the servo positions
+    #positions = [SB,SF,HB,HF,EB,EF,KB,KF]
+    pos = [0,1,2,3,4,5,6,7]
+
+    #sine waves generate servo positions for each joint of the robot
+    pos[0] = (int(self.amp) * math.sin(int(self.afreq)*t)) + 1500 + int(self.f_offset)
+    pos[1] = (int(self.amp) * math.sin(int(self.afreq)*t)) + 1522 - int(self.f_offset)
+    pos[2] = (int(self.amp) * math.sin(int(self.afreq)*t + gselector)) + 1500 + int(self.b_offset)
+    pos[3] = (int(self.amp) * math.sin(int(self.afreq)*t + gselector)) + 1446 - int(self.b_offset)
+ 
+    pos[4] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*t + float(self.phase))) + 1500 + int(self.fk_offset)
+    pos[5] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*t + float(self.phase))) + 1581 - int(self.fk_offset)
+    pos[6] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*t + gselector + float(self.phase))) + 1500 + int(self.bk_offset)
+    pos[7] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*t + gselector + float(self.phase))) + 1538 - int(self.bk_offset)
+  
+    #get current time
+    elapsed_time = get_time()
+  
+    if (elapsed_time - start_time >= sine_time):
+       print ('time difference: %s' % (elapsed_time - start_time))
+       start_time = elapsed_time
+       t += 1
+
+       #format servo positions properly
+       for i in range(len(pos)):
+         if (pos[i] < 1000):
+	   pos[i] = '0' + str(int(pos[i]))
+
+         else:
+	   pos[i] = str(int(pos[i]))
+     
+       #transmit servo positions over serial connection
+       #bb.write('%d%d%d%d%d%d%d%d\n' % (SB,SF,HB,HF,EB,EF,KB,KF))
+       print('%s%s%s%s%s%s%s%s\n' % (pos[0],pos[1],pos[2],pos[3],pos[4],pos[5],pos[6],pos[7]))
+       bb.write('%s%s%s%s%s%s%s%s\n' % (pos[0],pos[1],pos[2],pos[3],pos[4],pos[5],pos[6],pos[7]))
+       
+     root.after(int(sine_time*1000),oscillate)
     
 
 #########################################################################################################################
@@ -225,5 +191,5 @@ root = Tk()
 
 app = App(root)
 
-root.after(0,loop)
+root.after(0,app.oscillate)
 root.mainloop()

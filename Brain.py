@@ -135,10 +135,10 @@ class App:
     self.f_offset = event
 
   def set_boffset(self, event):
-    self.b_offset = val
+    self.b_offset = event
 
   def set_knee_amp(self, event):
-    self.knee_amp = val
+    self.knee_amp = event
 
   def oscillate(self):
     #variables which allow sine wave parameters to be changed via a gui interface
@@ -151,13 +151,13 @@ class App:
     #sine waves generate servo positions for each joint of the robot
     pos[0] = (int(self.amp) * math.sin(int(self.afreq)*t)) + 1500 + int(self.f_offset)
     pos[1] = (int(self.amp) * math.sin(int(self.afreq)*t)) + 1522 - int(self.f_offset)
-    pos[2] = (int(self.amp) * math.sin(int(self.afreq)*t + gselector)) + 1500 + int(self.b_offset)
-    pos[3] = (int(self.amp) * math.sin(int(self.afreq)*t + gselector)) + 1446 - int(self.b_offset)
+    pos[2] = (int(self.amp) * math.sin(int(self.afreq)*t + gait)) + 1500 + int(self.b_offset)
+    pos[3] = (int(self.amp) * math.sin(int(self.afreq)*t + gait)) + 1446 - int(self.b_offset)
  
     pos[4] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*t + float(self.phase))) + 1500 + int(self.fk_offset)
     pos[5] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*t + float(self.phase))) + 1581 - int(self.fk_offset)
-    pos[6] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*t + gselector + float(self.phase))) + 1500 + int(self.bk_offset)
-    pos[7] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*t + gselector + float(self.phase))) + 1538 - int(self.bk_offset)
+    pos[6] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*t + gait + float(self.phase))) + 1500 + int(self.bk_offset)
+    pos[7] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*t + gait + float(self.phase))) + 1538 - int(self.bk_offset)
   
     #get current time
     elapsed_time = get_time()
@@ -180,7 +180,7 @@ class App:
        print('%s%s%s%s%s%s%s%s\n' % (pos[0],pos[1],pos[2],pos[3],pos[4],pos[5],pos[6],pos[7]))
        bb.write('%s%s%s%s%s%s%s%s\n' % (pos[0],pos[1],pos[2],pos[3],pos[4],pos[5],pos[6],pos[7]))
        
-     root.after(int(sine_time*1000),oscillate)
+    root.after(int(sine_time*1000),self.oscillate)
     
 
 #########################################################################################################################

@@ -141,7 +141,7 @@ class App:
     self.knee_amp = event
 
   def oscillate(self):
-    #variables which allow sine wave parameters to be changed via a gui interface
+    #variables for timer, will be added to the class soon
     global t, start_time, elapsed_time
 
     #array to hold the servo positions

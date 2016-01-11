@@ -7,30 +7,15 @@ import math
 
 PI = 3.14159265359
 
-#independant variable for sine waves
-t = 0
-
-#time in seconds for oscillators to wait before transmitting current positions
-sine_time = 0.05 		
-elapsed_time = 0
-
 #serial port for botboard communication
 bb = serial.Serial('/dev/rfcomm0', 115200)	
 print(bb.name)
-
-#start the oscillator timer
-start_time = time.time() 			
-
-#function to obtain current time
-def get_time():					      
-  return time.time()
-
 
 ########################################################################################################################
 ###########################################             GUI            #################################################
 ########################################################################################################################
 
-class App:
+class Mr_Runner:
   def __init__(self, master):
     #oscillator control variables
     self.phase = 0					
@@ -38,14 +23,20 @@ class App:
     self.amp = 0					
     self.gait = 0  
     self.knee_amp = 0
-    self.gselector = 0
 
     #front and back joint offsets
     self.fk_offset = 0
     self.bk_offset = 0
     self.f_offset = 0					
     self.b_offset = 0
+    
+    #timer controls
+    start_time = time.time() 
+    self.elapsed_time = 0
+    self.sine_time = 0.05 
+    self.t = 0
 
+    #create GUI
     self.frame = Frame(master)
     self.frame.pack()
 
@@ -139,33 +130,34 @@ class App:
 
   def set_knee_amp(self, event):
     self.knee_amp = event
+    
+  #function to obtain current time
+  def get_time(self):					      
+    return time.time()
 
   def oscillate(self):
-    #variables for timer, will be added to the class soon
-    global t, start_time, elapsed_time
-
     #array to hold the servo positions
     #positions = [SB,SF,HB,HF,EB,EF,KB,KF]
     pos = [0,1,2,3,4,5,6,7]
 
     #sine waves generate servo positions for each joint of the robot
-    pos[0] = (int(self.amp) * math.sin(int(self.afreq)*t)) + 1500 + int(self.f_offset)
-    pos[1] = (int(self.amp) * math.sin(int(self.afreq)*t)) + 1522 - int(self.f_offset)
-    pos[2] = (int(self.amp) * math.sin(int(self.afreq)*t + self.gait)) + 1500 + int(self.b_offset)
-    pos[3] = (int(self.amp) * math.sin(int(self.afreq)*t + self.gait)) + 1446 - int(self.b_offset)
+    pos[0] = (int(self.amp) * math.sin(int(self.afreq)*self.t)) + 1500 + int(self.f_offset)
+    pos[1] = (int(self.amp) * math.sin(int(self.afreq)*self.t)) + 1522 - int(self.f_offset)
+    pos[2] = (int(self.amp) * math.sin(int(self.afreq)*self.t + self.gait)) + 1500 + int(self.b_offset)
+    pos[3] = (int(self.amp) * math.sin(int(self.afreq)*self.t + self.gait)) + 1446 - int(self.b_offset)
  
-    pos[4] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*t + float(self.phase))) + 1500 + int(self.fk_offset)
-    pos[5] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*t + float(self.phase))) + 1581 - int(self.fk_offset)
-    pos[6] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*t + self.gait + float(self.phase))) + 1500 + int(self.bk_offset)
-    pos[7] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*t + self.gait + float(self.phase))) + 1538 - int(self.bk_offset)
+    pos[4] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*self.t + float(self.phase))) + 1500 + int(self.fk_offset)
+    pos[5] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*self.t + float(self.phase))) + 1581 - int(self.fk_offset)
+    pos[6] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*self.t + self.gait + float(self.phase))) + 1500 + int(self.bk_offset)
+    pos[7] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*self.t + self.gait + float(self.phase))) + 1538 - int(self.bk_offset)
   
     #get current time
-    elapsed_time = get_time()
+    self.elapsed_time = get_time()
   
-    if (elapsed_time - start_time >= sine_time):
-       print ('time difference: %s' % (elapsed_time - start_time))
-       start_time = elapsed_time
-       t += 1
+    if (self.elapsed_time - self.start_time >= self.sine_time):
+       print ('time difference: %s' % (self.elapsed_time - self.start_time))
+       self.start_time = self.elapsed_time
+       self.t += 1
 
        #format servo positions properly
        for i in range(len(pos)):
@@ -189,7 +181,7 @@ class App:
    
 root = Tk()
 
-app = App(root)
+version1 = Mr_Runner(root)
 
-root.after(0,app.oscillate)
+root.after(0,version1.oscillate)
 root.mainloop()

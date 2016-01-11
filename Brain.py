@@ -82,7 +82,7 @@ class App:
 
     self.s_afreq = Scale(
       master, from_=0, to=20, orient=HORIZONTAL, sliderlength=50, length=200, label="Angular Frequency", command=self.set_afreq)
-    self.s_afreq.set(1)
+    self.s_afreq.set(0)
     self.s_afreq.pack()
 
     self.s_fkoffset = Scale(
@@ -151,13 +151,13 @@ class App:
     #sine waves generate servo positions for each joint of the robot
     pos[0] = (int(self.amp) * math.sin(int(self.afreq)*t)) + 1500 + int(self.f_offset)
     pos[1] = (int(self.amp) * math.sin(int(self.afreq)*t)) + 1522 - int(self.f_offset)
-    pos[2] = (int(self.amp) * math.sin(int(self.afreq)*t + gait)) + 1500 + int(self.b_offset)
-    pos[3] = (int(self.amp) * math.sin(int(self.afreq)*t + gait)) + 1446 - int(self.b_offset)
+    pos[2] = (int(self.amp) * math.sin(int(self.afreq)*t + self.gait)) + 1500 + int(self.b_offset)
+    pos[3] = (int(self.amp) * math.sin(int(self.afreq)*t + self.gait)) + 1446 - int(self.b_offset)
  
     pos[4] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*t + float(self.phase))) + 1500 + int(self.fk_offset)
     pos[5] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*t + float(self.phase))) + 1581 - int(self.fk_offset)
-    pos[6] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*t + gait + float(self.phase))) + 1500 + int(self.bk_offset)
-    pos[7] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*t + gait + float(self.phase))) + 1538 - int(self.bk_offset)
+    pos[6] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*t + self.gait + float(self.phase))) + 1500 + int(self.bk_offset)
+    pos[7] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*t + self.gait + float(self.phase))) + 1538 - int(self.bk_offset)
   
     #get current time
     elapsed_time = get_time()

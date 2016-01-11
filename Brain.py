@@ -31,7 +31,7 @@ class Mr_Runner:
     self.b_offset = 0
     
     #timer controls
-    start_time = time.time() 
+    self.start_time = time.time() 
     self.elapsed_time = 0
     self.sine_time = 0.05 
     self.t = 0
@@ -152,7 +152,7 @@ class Mr_Runner:
     pos[7] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*self.t + self.gait + float(self.phase))) + 1538 - int(self.bk_offset)
   
     #get current time
-    self.elapsed_time = get_time()
+    self.elapsed_time = self.get_time()
   
     if (self.elapsed_time - self.start_time >= self.sine_time):
        print ('time difference: %s' % (self.elapsed_time - self.start_time))
@@ -172,7 +172,7 @@ class Mr_Runner:
        print('%s%s%s%s%s%s%s%s\n' % (pos[0],pos[1],pos[2],pos[3],pos[4],pos[5],pos[6],pos[7]))
        bb.write('%s%s%s%s%s%s%s%s\n' % (pos[0],pos[1],pos[2],pos[3],pos[4],pos[5],pos[6],pos[7]))
        
-    root.after(int(sine_time*1000),self.oscillate)
+    root.after(int(self.sine_time*1000),self.oscillate)
     
 
 #########################################################################################################################

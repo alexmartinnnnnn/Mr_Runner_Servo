@@ -65,45 +65,45 @@ class App:
     self.pace.pack(side=LEFT)
     
     #various sliders to control sine waves
-    self.phase = Scale(
+    self.s_phase = Scale(
       master, from_=0, to=3.14, orient=HORIZONTAL, resolution=0.01, sliderlength=50,  length=200, label="Phase", command=self.set_phase)
-    self.phase.set(3.14)
-    self.phase.pack()
+    self.s_phase.set(3.14)
+    self.s_phase.pack()
 
-    self.amp = Scale(
+    self.s_amp = Scale(
       master, from_=0, to=300, orient=HORIZONTAL, sliderlength=50,  length=200, label="Hip Amplitude", command=self.set_amp)
-    self.amp.set(150)
-    self.amp.pack()
+    self.s_amp.set(150)
+    self.s_amp.pack()
 
-    self.knee_amp = Scale(
+    self.s_knee_amp = Scale(
       master, from_=0, to=4, orient=HORIZONTAL, sliderlength=50, length=200, resolution=0.01, label= "Knee Amplitude", command=self.set_knee_amp)
-    self.knee_amp.set(1)
-    self.knee_amp.pack()
+    self.s_knee_amp.set(1)
+    self.s_knee_amp.pack()
 
-    self.afreq = Scale(
+    self.s_afreq = Scale(
       master, from_=0, to=20, orient=HORIZONTAL, sliderlength=50, length=200, label="Angular Frequency", command=self.set_afreq)
-    self.afreq.set(1)
-    self.afreq.pack()
+    self.s_afreq.set(1)
+    self.s_afreq.pack()
 
-    self.fkoffset = Scale(
+    self.s_fkoffset = Scale(
       master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Front Knee Offset", command=self.set_fkoffset)
-    self.fkoffset.set(0)
-    self.fkoffset.pack()
+    self.s_fkoffset.set(0)
+    self.s_fkoffset.pack()
 
-    self.bkoffset = Scale(
+    self.s_bkoffset = Scale(
       master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Back Knee Offset", command=self.set_bkoffset)
-    self.bkoffset.set(0)
-    self.bkoffset.pack()
+    self.s_bkoffset.set(0)
+    self.s_bkoffset.pack()
 
-    self.foffset = Scale(
+    self.s_foffset = Scale(
       master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Front Offset", command=self.set_foffset)
-    self.foffset.set(232)
-    self.foffset.pack()
+    self.s_foffset.set(232)
+    self.s_foffset.pack()
 
-    self.boffset = Scale(
+    self.s_boffset = Scale(
       master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Rear Offset", command=self.set_boffset)
-    self.boffset.set(108)
-    self.boffset.pack()
+    self.s_boffset.set(108)
+    self.s_boffset.pack()
     
   #change "gait" variable based on button selected from the gui
   def walk_button(self, event):

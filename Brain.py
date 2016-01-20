@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+#This is a program which allows the user to modify the parameters of 8 sine waves with a graphical interface. The outputs
+#of these sine waves are then formatted and written to the specified serial port.
+
 from Tkinter import *
 import serial
 import time
@@ -12,7 +15,7 @@ bb = serial.Serial('/dev/rfcomm0', 115200)
 print(bb.name)
 
 ########################################################################################################################
-###########################################             GUI            #################################################
+###########################################           MR RUNNER CLASS            #######################################
 ########################################################################################################################
 
 class Mr_Runner:

@@ -31,7 +31,7 @@ class Mr_Runner:
     self.b_offset = 0
     
     #timer controls
-    start_time = time.time() 
+    self.start_time = time.time() 
     self.elapsed_time = 0
     self.sine_time = 0.05 
     self.t = 0
@@ -72,7 +72,7 @@ class Mr_Runner:
     self.s_knee_amp.pack()
 
     self.s_afreq = Scale(
-      master, from_=0, to=20, orient=HORIZONTAL, sliderlength=50, length=200, label="Angular Frequency", command=self.set_afreq)
+      master, from_=0, to=2, orient=HORIZONTAL, sliderlength=50, length=200, resolution=0.01, label="Angular Frequency", command=self.set_afreq)
     self.s_afreq.set(0)
     self.s_afreq.pack()
 
@@ -87,12 +87,12 @@ class Mr_Runner:
     self.s_bkoffset.pack()
 
     self.s_foffset = Scale(
-      master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Front Offset", command=self.set_foffset)
+      master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Front Hip Offset", command=self.set_foffset)
     self.s_foffset.set(232)
     self.s_foffset.pack()
 
     self.s_boffset = Scale(
-      master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Rear Offset", command=self.set_boffset)
+      master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Rear Hip Offset", command=self.set_boffset)
     self.s_boffset.set(108)
     self.s_boffset.pack()
     
@@ -141,18 +141,18 @@ class Mr_Runner:
     pos = [0,1,2,3,4,5,6,7]
 
     #sine waves generate servo positions for each joint of the robot
-    pos[0] = (int(self.amp) * math.sin(int(self.afreq)*self.t)) + 1500 + int(self.f_offset)
-    pos[1] = (int(self.amp) * math.sin(int(self.afreq)*self.t)) + 1522 - int(self.f_offset)
-    pos[2] = (int(self.amp) * math.sin(int(self.afreq)*self.t + self.gait)) + 1500 + int(self.b_offset)
-    pos[3] = (int(self.amp) * math.sin(int(self.afreq)*self.t + self.gait)) + 1446 - int(self.b_offset)
+    pos[0] = (int(self.amp) * math.sin(float(self.afreq)*self.t)) + 1500 + int(self.f_offset)
+    pos[1] = (int(self.amp) * math.sin(float(self.afreq)*self.t)) + 1522 - int(self.f_offset)
+    pos[2] = (int(self.amp) * math.sin(float(self.afreq)*self.t + self.gait)) + 1500 + int(self.b_offset)
+    pos[3] = (int(self.amp) * math.sin(float(self.afreq)*self.t + self.gait)) + 1446 - int(self.b_offset)
  
-    pos[4] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*self.t + float(self.phase))) + 1500 + int(self.fk_offset)
-    pos[5] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*self.t + float(self.phase))) + 1581 - int(self.fk_offset)
-    pos[6] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*self.t + self.gait + float(self.phase))) + 1500 + int(self.bk_offset)
-    pos[7] = (int(self.amp)*float(self.knee_amp) * math.sin(int(self.afreq)*self.t + self.gait + float(self.phase))) + 1538 - int(self.bk_offset)
+    pos[4] = (int(self.amp)*float(self.knee_amp) * math.sin(float(self.afreq)*self.t + float(self.phase))) + 1500 + int(self.fk_offset)
+    pos[5] = (int(self.amp)*float(self.knee_amp) * math.sin(float(self.afreq)*self.t + float(self.phase))) + 1581 - int(self.fk_offset)
+    pos[6] = (int(self.amp)*float(self.knee_amp) * math.sin(float(self.afreq)*self.t + self.gait + float(self.phase))) + 1500 + int(self.bk_offset)
+    pos[7] = (int(self.amp)*float(self.knee_amp) * math.sin(float(self.afreq)*self.t + self.gait + float(self.phase))) + 1538 - int(self.bk_offset)
   
     #get current time
-    self.elapsed_time = get_time()
+    self.elapsed_time = self.get_time()
   
     if (self.elapsed_time - self.start_time >= self.sine_time):
        print ('time difference: %s' % (self.elapsed_time - self.start_time))
@@ -172,7 +172,7 @@ class Mr_Runner:
        print('%s%s%s%s%s%s%s%s\n' % (pos[0],pos[1],pos[2],pos[3],pos[4],pos[5],pos[6],pos[7]))
        bb.write('%s%s%s%s%s%s%s%s\n' % (pos[0],pos[1],pos[2],pos[3],pos[4],pos[5],pos[6],pos[7]))
        
-    root.after(int(sine_time*1000),self.oscillate)
+    root.after(int(self.sine_time*1000),self.oscillate)
     
 
 #########################################################################################################################
@@ -180,6 +180,7 @@ class Mr_Runner:
 #########################################################################################################################
    
 root = Tk()
+root.wm_title("Gait Generator")
 
 version1 = Mr_Runner(root)
 

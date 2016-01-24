@@ -65,6 +65,16 @@ void loop() {
     int n6 = servo6.toInt();
     int n7 = servo7.toInt();
     int n8 = servo8.toInt();
+    
+    pos[0] = amp * sin(afreq*t) + 1500 + f_offset
+    pos[1] = amp * sin(afreq*t) + 1522 - f_offset
+    pos[2] = amp * sin(afreq*t + gait) + 1500 + b_offset
+    pos[3] = amp * sin(afreq*t + gait) + 1446 - b_offset
+ 
+    pos[4] = amp*knee_amp * sin(afreq*t + phase) + 1500 + fk_offset
+    pos[5] = amp*knee_amp * sin(afreq*t + phase) + 1581 - fk_offset
+    pos[6] = amp*knee_amp * sin(afreq*t + gait + phase) + 1500 + bk_offset
+    pos[7] = amp*knee_amp * sin(afreq*t + gait + phase) + 1538 - bk_offset
            
     myservo1.writeMicroseconds(n3); //set servo positions
     myservo2.writeMicroseconds(n7);

@@ -141,39 +141,38 @@ class Mr_Runner:
   def oscillate(self):
     #array to hold the servo positions
     #positions = [SB,SF,HB,HF,EB,EF,KB,KF]
-    pos = [0,1,2,3,4,5,6,7]
+    pos = [0,1,2,3,4,5,6,7,8]
 
-    #sine waves generate servo positions for each joint of the robot
-    pos[0] = (int(self.amp) * math.sin(float(self.afreq)*self.t)) + 1500 + int(self.f_offset)
-    pos[1] = (int(self.amp) * math.sin(float(self.afreq)*self.t)) + 1522 - int(self.f_offset)
-    pos[2] = (int(self.amp) * math.sin(float(self.afreq)*self.t + self.gait)) + 1500 + int(self.b_offset)
-    pos[3] = (int(self.amp) * math.sin(float(self.afreq)*self.t + self.gait)) + 1446 - int(self.b_offset)
- 
-    pos[4] = (int(self.amp)*float(self.knee_amp) * math.sin(float(self.afreq)*self.t + float(self.phase))) + 1500 + int(self.fk_offset)
-    pos[5] = (int(self.amp)*float(self.knee_amp) * math.sin(float(self.afreq)*self.t + float(self.phase))) + 1581 - int(self.fk_offset)
-    pos[6] = (int(self.amp)*float(self.knee_amp) * math.sin(float(self.afreq)*self.t + self.gait + float(self.phase))) + 1500 + int(self.bk_offset)
-    pos[7] = (int(self.amp)*float(self.knee_amp) * math.sin(float(self.afreq)*self.t + self.gait + float(self.phase))) + 1538 - int(self.bk_offset)
+    #sine wave parameters to determine shape
+    pos[0] = self.amp
+    pos[1] = self.knee_amp
+    pos[2] = self.afreq
+    pos[3] = self.gait
+    pos[4] = self.phase
+    pos[5] = self.f_offset
+    pos[6] = self.b_offset
+    pos[7] = self.fk_offset
+    pos[8] = self.bk_offset
   
-    #get current time
-    self.elapsed_time = self.get_time()
-  
-    if (self.elapsed_time - self.start_time >= self.sine_time):
-       print ('time difference: %s' % (self.elapsed_time - self.start_time))
-       self.start_time = self.elapsed_time
-       self.t += 1
-
-       #format servo positions properly
-       for i in range(len(pos)):
-         if (pos[i] < 1000):
-	   pos[i] = '0' + str(int(pos[i]))
-
-         else:
-	   pos[i] = str(int(pos[i]))
+    if (pos[0] < 100):
+      pos[0] = '0' + str(int(pos[0])) 
+        if (pos[0] < 10):
+	  pos[0] = '0' + str(int(pos[0]))
+    else:
+      pos[0] = str(int(pos[0]))
+      
+    if (pos[5] < 100 and pos[5] > 0):
+      pos[5] = '0' + str(int(pos[5]))
+        if (pos[5] < 10):
+          pos[5] = '0' + str(int(pos[5]))
+    
+    elif (pos[5] < 0):
+       pos[5] = '-00' + str(int(pos[5]))
      
-       #transmit servo positions over serial connection
-       #bb.write('%d%d%d%d%d%d%d%d\n' % (SB,SF,HB,HF,EB,EF,KB,KF))
-       print('%s%s%s%s%s%s%s%s\n' % (pos[0],pos[1],pos[2],pos[3],pos[4],pos[5],pos[6],pos[7]))
-       bb.write('%s%s%s%s%s%s%s%s\n' % (pos[0],pos[1],pos[2],pos[3],pos[4],pos[5],pos[6],pos[7]))
+    #transmit servo positions over serial connection
+    #bb.write('%d%d%d%d%d%d%d%d\n' % (SB,SF,HB,HF,EB,EF,KB,KF))
+    print('%s%s%s%s%s%s%s%s%s\n' % (pos[0],pos[1],pos[2],pos[3],pos[4],pos[5],pos[6],pos[7],pos[8]))
+    bb.write('%s%s%s%s%s%s%s%s%s\n' % (pos[0],pos[1],pos[2],pos[3],pos[4],pos[5],pos[6],pos[7],pos[8]))
        
     root.after(int(self.sine_time*1000),self.oscillate)
     

@@ -18,27 +18,11 @@ print(bb.name)
 
 class Mr_Runner:
   def __init__(self, master):
-  	#serial string
+    #serial string
     self.pos = [0,1,2,3,4,5,6,7,8]
     
-    #oscillator control variables
-    self.phase = 0					
-    self.afreq = 0					  
-    self.amp = 0					
-    self.gait = 0  
-    self.knee_amp = 0
-
-    #front and back joint offsets
-    self.fk_offset = 0
-    self.bk_offset = 0
-    self.f_offset = 0					
-    self.b_offset = 0
-    
     #timer controls
-    self.start_time = time.time() 
-    self.elapsed_time = 0
     self.sine_time = 0.05 
-    self.t = 0
 
     #create GUI
     self.frame = Frame(master)
@@ -126,10 +110,6 @@ class Mr_Runner:
 
   def set_knee_amp(self, event):
     pos[1] = event
-    
-  #function to obtain current time
-  def get_time(self):					      
-    return time.time()
 
   #format and transmit serial data
   def transmit(self):

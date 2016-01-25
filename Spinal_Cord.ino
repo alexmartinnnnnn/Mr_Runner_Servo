@@ -1,7 +1,6 @@
 #include <Servo.h>
 
-//Servo SB, SF, HB, HF, EB, EF, KB, KF; 
-Servo myservo1, myservo2, myservo3, myservo4, myservo5, myservo6, myservo7, myservo8;
+Servo SB, SF, HB, HF, EB, EF, KB, KF;
 String readString, amp, knee_amp, afreq, gait, phase, f_offset, b_offset, fk_offset, bf_offset;
 
 unsigned long previousMillis = 0;
@@ -13,14 +12,14 @@ void setup(){
   Serial.begin(115200);
   
   //Connect servos to Arduino
-  myservo1.attach(2);
-  myservo2.attach(3);
-  myservo3.attach(4);
-  myservo4.attach(5);
-  myservo5.attach(6);
-  myservo6.attach(7);
-  myservo7.attach(8);
-  myservo8.attach(9);
+  HB.attach(2);
+  KF.attach(3);
+  SB.attach(4); 
+  EB.attach(5);
+  HF.attach(6); 
+  KB.attach(7);
+  SF.attach(8); 
+  EF.attach(9);
   
   delay(3000);
 }
@@ -57,27 +56,27 @@ void loop(){
     
     /*
     //Print to serial monitor to see parsed results
-    Serial.print(servo1); 
-    Serial.print(servo2); 
-    Serial.print(servo3); 
-    Serial.print(servo4);
-    Serial.print(servo5);
-    Serial.print(servo6);
-    Serial.print(servo7);  
-    Serial.println(servo8);
-    */
-    
-    /*
+    Serial.print(amp); 
+    Serial.print(knee_amp); 
+    Serial.print(afreq); 
+    Serial.print(gait);
+    Serial.print(phase);
+    Serial.print(f_offset);
+    Serial.print(b_offset);  
+    Serial.print(fk_offset);
+    Serial.println(bk_offset);
+  
     //clear strings
     readString="";
-    servo1="";
-    servo2="";
-    servo3="";
-    servo4="";
-    servo5="";
-    servo6="";
-    servo7="";
-    servo8="";
+    amp="";
+    knee_amp="";
+    afreq="";
+    gait="";
+    phase="";
+    f_offset="";
+    b_offset="";
+    fk_offset="";
+    bk_offset="";
     */
   }
   //determine joint positions
@@ -99,14 +98,14 @@ void loop(){
     previousMillis = currentMillis;
     
     //write servo positions
-    myservo1.writeMicroseconds(pos[2]);
-    myservo2.writeMicroseconds(pos[6]);
-    myservo3.writeMicroseconds(pos[0]); 
-    myservo4.writeMicroseconds(pos[4]);
-    myservo5.writeMicroseconds(pos[3]); 
-    myservo6.writeMicroseconds(pos[7]);
-    myservo7.writeMicroseconds(pos[1]); 
-    myservo8.writeMicroseconds(pos[5]);
+    HB.writeMicroseconds(pos[2]);
+    KF.writeMicroseconds(pos[6]);
+    SB.writeMicroseconds(pos[0]); 
+    EB.writeMicroseconds(pos[4]);
+    HF.writeMicroseconds(pos[3]); 
+    KB.writeMicroseconds(pos[7]);
+    SF.writeMicroseconds(pos[1]); 
+    EF.writeMicroseconds(pos[5]);
     
     //increment time parameter
     t+=1;

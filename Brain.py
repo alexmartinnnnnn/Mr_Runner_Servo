@@ -8,8 +8,6 @@ import serial
 import time
 import math
 
-PI = 3.14159265359
-
 #serial port for botboard communication
 bb = serial.Serial('/dev/rfcomm0', 115200)	
 print(bb.name)

@@ -83,7 +83,7 @@ void loop(){
   pos[0] = int(amp) * sin(float(afreq)*t) + 1500 + int(f_offset)
   pos[1] = int(amp) * sin(float(afreq)*t) + 1522 - int(f_offset)
   pos[2] = int(amp) * sin(float(afreq)*t + float(gait)) + 1500 + int(b_offset)
-  pos[3] = int(amp) * sin(float(afreq)*t + float(gait)) + 1446 - iny(b_offset)
+  pos[3] = int(amp) * sin(float(afreq)*t + float(gait)) + 1446 - int(b_offset)
  
   pos[4] = int(amp)*float(knee_amp) * sin(float(afreq)*t + float(phase)) + 1500 + int(fk_offset)
   pos[5] = int(amp)*float(knee_amp) * sin(float(afreq)*t + float(phase)) + 1581 - int(fk_offset)

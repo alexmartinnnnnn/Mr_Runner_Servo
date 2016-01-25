@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-#This is a program which allows the user to modify the parameters of 8 sine waves with a graphical interface. The outputs
-#of these sine waves are then formatted and written to the specified serial port.
+#This is a program which allows the user to modify the parameters of 8 sine waves with a graphical interface. These
+#parameters are then formatted and written to the specified serial port.
 
 from Tkinter import *
 import serial
@@ -21,7 +21,7 @@ class Mr_Runner:
     #serial string
     self.pos = [0,1,2,3,4,5,6,7,8]
     
-    #timer controls
+    #timer control
     self.sine_time = 0.05 
 
     #create GUI
@@ -156,5 +156,5 @@ root.wm_title("Gait Generator")
 
 version1 = Mr_Runner(root)
 
-root.after(0,version1.oscillate)
+root.after(0,version1.transmit)
 root.mainloop()

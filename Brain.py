@@ -18,6 +18,9 @@ print(bb.name)
 
 class Mr_Runner:
   def __init__(self, master):
+  	#serial string
+    self.pos = [0,1,2,3,4,5,6,7,8]
+    
     #oscillator control variables
     self.phase = 0					
     self.afreq = 0					  
@@ -91,89 +94,77 @@ class Mr_Runner:
     
   #change "gait" variable based on button selected from the gui
   def walk_button(self, event):
-    self.gait = '1.5708'
+    self.pos[3] = '1.5708'
 
   def trot_button(self, event):
-    self.gait = '-3.142'
+    self.pos[3] = '-3.142'
 
   def pace_button(self, event):
-    self.gait = '000000'
+    self.pos[3] = '000000'
 
   #functions to obtain values returned from gui sliders
   def set_phase(self, event):
-    self.phase = event
+    self.pos[4] = event
 
   def set_amp(self, event):
-    self.amp = event
+    self.pos[0] = event
 
   def set_afreq(self, event):
-    self.afreq = event
+    self.pos[2] = event
 
   def set_fkoffset(self, event):
-    self.fk_offset = event
+    self.pos[7] = event
 
   def set_bkoffset(self, event):
-    self.bk_offset = event
+    self.pos[8] = event
 
   def set_foffset(self, event):
-    self.f_offset = event
+    self.pos[5] = event
 
   def set_boffset(self, event):
-    self.b_offset = event
+    pos[6] = event
 
   def set_knee_amp(self, event):
-    self.knee_amp = event
+    pos[1] = event
     
   #function to obtain current time
   def get_time(self):					      
     return time.time()
 
-  def oscillate(self):
-    #array to hold the servo positions
-    #positions = [SB,SF,HB,HF,EB,EF,KB,KF]
-    pos = [0,1,2,3,4,5,6,7,8]
-
-    #sine wave parameters to determine shape
-    pos[0] = self.amp
-    pos[1] = self.knee_amp
-    pos[2] = self.afreq
-    pos[3] = self.gait
-    pos[4] = self.phase
-    pos[5] = self.f_offset
-    pos[6] = self.b_offset
-    pos[7] = self.fk_offset
-    pos[8] = self.bk_offset
-  
-    if (pos[0] < 100):
-      pos[0] = '0' + str(int(pos[0])) 
-        if (pos[0] < 10):
-	        pos[0] = '0' + str(int(pos[0]))
+  #format and transmit serial data
+  def transmit(self):
+    #amplitude
+    if (self.pos[0] < 100):
+      self.pos[0] = '0' + str(int(self.pos[0])) 
+        if (self.pos[0] < 10):
+	        self.pos[0] = '0' + str(int(self.pos[0]))
     
     else:
-      pos[0] = str(int(pos[0]))
-      
-    for i in range (5, 9)  
-      if (pos[i] < 100 and pos[i] > 0):
-        pos[i] = '0' + str(int(pos[i]))
-          if (pos[i] < 10):
-            pos[i] = '0' + str(int(pos[i]))
+      self.pos[0] = str(int(self.pos[0]))
     
-      elif (pos[i] < 0 and pos[i] > -10):
-        pos[i] = '-00' + str(abs(int(pos[i])))
+    #joint offsets  
+    for i in range (5, 9)  
+      if (self.pos[i] < 100 and self.pos[i] > 0):
+        self.pos[i] = '0' + str(int(self.pos[i]))
+          if (self.pos[i] < 10):
+            self.pos[i] = '0' + str(int(self.pos[i]))
+    
+      elif (self.pos[i] < 0 and self.pos[i] > -10):
+        self.pos[i] = '-00' + str(abs(int(self.pos[i])))
        
-      elif (pos[i] < -10):
-    	  pos[i] = '-0' + str(abs(int(pos[i])))
+      elif (self.pos[i] < -10):
+    	  self.pos[i] = '-0' + str(abs(int(self.pos[i])))
     	  
     	else:
-    	  pos[i] = str(int(pos[i]))
+    	  self.pos[i] = str(int(self.pos[i]))
       
      
-    #transmit servo positions over serial connection
-    #bb.write('%d%d%d%d%d%d%d%d\n' % (SB,SF,HB,HF,EB,EF,KB,KF))
-    print('%s%s%s%s%s%s%s%s%s\n' % (pos[0],pos[1],pos[2],pos[3],pos[4],pos[5],pos[6],pos[7],pos[8]))
-    bb.write('%s%s%s%s%s%s%s%s%s\n' % (pos[0],pos[1],pos[2],pos[3],pos[4],pos[5],pos[6],pos[7],pos[8]))
+    #transmit sine parameters over serial connection
+    #bb.write('%s%s%s%s%s%s%s%s%s\n' % (SB,SF,HB,HF,EB,EF,KB,KF))
+    print('%s%s%s%s%s%s%s%s%s\n' % (self.pos[0],self.pos[1],self.pos[2],self.pos[3],self.pos[4],self.pos[5],self.pos[6],self.pos[7],self.pos[8]))
+    bb.write('%s%s%s%s%s%s%s%s%s\n' % (self.pos[0],self.pos[1],self.pos[2],self.pos[3],self.pos[4],self.pos[5],self.pos[6],self.pos[7],self.pos[8]))
        
-    root.after(int(self.sine_time*1000),self.oscillate)
+    root.after(int(self.sine_time*1000),self.transmit)
     
 
 #########################################################################################################################

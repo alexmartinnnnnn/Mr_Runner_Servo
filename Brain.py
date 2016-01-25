@@ -59,55 +59,47 @@ class Mr_Runner:
     self.pace.pack(side=LEFT)
     
     #various sliders to control sine waves
-    self.s_phase = Scale(
-      master, from_=0, to=3.14, orient=HORIZONTAL, resolution=0.01, sliderlength=50,  length=200, label="Phase", command=self.set_phase)
+    self.s_phase = Scale(master, from_=0, to=3.14, orient=HORIZONTAL, resolution=0.01, sliderlength=50,  length=200, label="Phase", command=self.set_phase)
     self.s_phase.set(3.14)
     self.s_phase.pack()
 
-    self.s_amp = Scale(
-      master, from_=0, to=300, orient=HORIZONTAL, sliderlength=50,  length=200, label="Hip Amplitude", command=self.set_amp)
+    self.s_amp = Scale(master, from_=0, to=300, orient=HORIZONTAL, sliderlength=50,  length=200, label="Hip Amplitude", command=self.set_amp)
     self.s_amp.set(150)
     self.s_amp.pack()
 
-    self.s_knee_amp = Scale(
-      master, from_=0, to=4, orient=HORIZONTAL, sliderlength=50, length=200, resolution=0.01, label= "Knee Amplitude", command=self.set_knee_amp)
+    self.s_knee_amp = Scale(master, from_=0, to=4, orient=HORIZONTAL, sliderlength=50, length=200, resolution=0.01, label= "Knee Amplitude", command=self.set_knee_amp)
     self.s_knee_amp.set(1)
     self.s_knee_amp.pack()
 
-    self.s_afreq = Scale(
-      master, from_=0, to=2, orient=HORIZONTAL, sliderlength=50, length=200, resolution=0.01, label="Angular Frequency", command=self.set_afreq)
+    self.s_afreq = Scale(master, from_=0, to=2, orient=HORIZONTAL, sliderlength=50, length=200, resolution=0.01, label="Angular Frequency", command=self.set_afreq)
     self.s_afreq.set(0)
     self.s_afreq.pack()
 
-    self.s_fkoffset = Scale(
-      master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Front Knee Offset", command=self.set_fkoffset)
+    self.s_fkoffset = Scale(master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Front Knee Offset", command=self.set_fkoffset)
     self.s_fkoffset.set(0)
     self.s_fkoffset.pack()
 
-    self.s_bkoffset = Scale(
-      master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Back Knee Offset", command=self.set_bkoffset)
+    self.s_bkoffset = Scale(master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Back Knee Offset", command=self.set_bkoffset)
     self.s_bkoffset.set(0)
     self.s_bkoffset.pack()
 
-    self.s_foffset = Scale(
-      master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Front Hip Offset", command=self.set_foffset)
+    self.s_foffset = Scale(master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Front Hip Offset", command=self.set_foffset)
     self.s_foffset.set(232)
     self.s_foffset.pack()
 
-    self.s_boffset = Scale(
-      master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Rear Hip Offset", command=self.set_boffset)
+    self.s_boffset = Scale(master, from_=-400, to=400, orient=HORIZONTAL, sliderlength=50, length=200, label="Rear Hip Offset", command=self.set_boffset)
     self.s_boffset.set(108)
     self.s_boffset.pack()
     
   #change "gait" variable based on button selected from the gui
   def walk_button(self, event):
-    self.gait = PI/2
+    self.gait = '1.5708'
 
   def trot_button(self, event):
-    self.gait = -PI
+    self.gait = '-3.142'
 
   def pace_button(self, event):
-    self.gait = 0
+    self.gait = '000000'
 
   #functions to obtain values returned from gui sliders
   def set_phase(self, event):
@@ -157,17 +149,26 @@ class Mr_Runner:
     if (pos[0] < 100):
       pos[0] = '0' + str(int(pos[0])) 
         if (pos[0] < 10):
-	  pos[0] = '0' + str(int(pos[0]))
+	        pos[0] = '0' + str(int(pos[0]))
+    
     else:
       pos[0] = str(int(pos[0]))
       
-    if (pos[5] < 100 and pos[5] > 0):
-      pos[5] = '0' + str(int(pos[5]))
-        if (pos[5] < 10):
-          pos[5] = '0' + str(int(pos[5]))
+    for i in range (5, 9)  
+      if (pos[i] < 100 and pos[i] > 0):
+        pos[i] = '0' + str(int(pos[i]))
+          if (pos[i] < 10):
+            pos[i] = '0' + str(int(pos[i]))
     
-    elif (pos[5] < 0):
-       pos[5] = '-00' + str(int(pos[5]))
+      elif (pos[i] < 0 and pos[i] > -10):
+        pos[i] = '-00' + str(abs(int(pos[i])))
+       
+      elif (pos[i] < -10):
+    	  pos[i] = '-0' + str(abs(int(pos[i])))
+    	  
+    	else:
+    	  pos[i] = str(int(pos[i]))
+      
      
     #transmit servo positions over serial connection
     #bb.write('%d%d%d%d%d%d%d%d\n' % (SB,SF,HB,HF,EB,EF,KB,KF))

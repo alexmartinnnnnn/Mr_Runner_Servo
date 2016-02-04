@@ -26,7 +26,7 @@ class Mr_Runner:
     self.pos[4] = '1.571'
     
     #timer control
-    self.sine_time = 0.05 
+    self.t_time = 0.05 
 
     #create parameter change flag
     self.flag = 0
@@ -177,15 +177,14 @@ class Mr_Runner:
         #reset flag
         self.flag = 0      
      
+      #print sine parameters to console
       #transmit sine parameters over serial connection
-      #bb.write('%s%s%s%s%s%s%s%s%s\n' % (SB,SF,HB,HF,EB,EF,KB,KF))
+      #bb.write('%s%s%s%s%s%s%s%s%s\n' % (hip_amp, knee_amp, afreq, phase, gait, f_offset, b_offset, fk_offset, bk_offset))
       print('%s %s %s %s %s %s %s %s %s\n' % (self.pos[0],self.pos[1],self.pos[2],self.pos[3],self.pos[4],self.pos[5],self.pos[6],self.pos[7],self.pos[8]))
       bb.write('%s%s%s%s%s%s%s%s%s\n' % (self.pos[0],self.pos[1],self.pos[2],self.pos[3],self.pos[4],self.pos[5],self.pos[6],self.pos[7],self.pos[8]))
        
-
-    root.after(int(self.sine_time*1000),self.transmit)
+    root.after(int(self.t_time*1000),self.transmit)
     
-
 #########################################################################################################################
 #######################################               MAIN PROGRAM             ##########################################
 #########################################################################################################################

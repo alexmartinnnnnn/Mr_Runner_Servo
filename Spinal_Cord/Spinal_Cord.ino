@@ -1,7 +1,8 @@
 #include <Servo.h>
 
 Servo SB, SF, HB, HF, EB, EF, KB, KF;
-String readString, amp, knee_amp, afreq, gait, phase, f_offset, b_offset, fk_offset, bf_offset;
+String readString, amp, knee_amp, afreq, gait, phase, f_offset, b_offset, fk_offset, bk_offset;
+char pos[] = {0,1,2,3,4,5,6,7,8};
 
 unsigned long previousMillis = 0;
 unsigned int sine_time = 0.05;
@@ -27,7 +28,7 @@ void setup(){
 void loop(){
   char c;
     
-  while (Serial.available() && readString.length() < 33){
+  while (Serial.available() && readString.length() < 38){
     //delay to allow buffer to fill
     delayMicroseconds(150);
     if (Serial.available() > 0){
@@ -44,15 +45,15 @@ void loop(){
     Serial.println(readString.length()); 
     
     //Parse serial string into separate parameters
-    amp = readString.substring(0, 4);
-    knee_amp = readString.substring(4, 8); 
-    afreq = readString.substring(8, 12); 
-    gait = readString.substring(12, 16); 
-    phase = readString.substring(16, 20); 
-    f_offset = readString.substring(20, 24); 
-    b_offset = readString.substring(24, 28); 
-    fk_offset = readString.substring(28, 32); 
-    bk_offset = readString.substring(32, 36);
+    amp = readString.substring(0, 3);
+    knee_amp = readString.substring(3, 7); 
+    afreq = readString.substring(7, 11); 
+    phase = readString.substring(12, 16); 
+    gait = readString.substring(16, 21); 
+    f_offset = readString.substring(21, 25); 
+    b_offset = readString.substring(25, 29); 
+    fk_offset = readString.substring(29, 33); 
+    bk_offset = readString.substring(33, 37);
     
     /*
     //Print to serial monitor to see parsed results
@@ -65,7 +66,7 @@ void loop(){
     Serial.print(b_offset);  
     Serial.print(fk_offset);
     Serial.println(bk_offset);
-  
+    */
     //clear strings
     readString="";
     amp="";
@@ -77,18 +78,42 @@ void loop(){
     b_offset="";
     fk_offset="";
     bk_offset="";
-    */
   }
+  
+  int iAmp = amp.toInt();
+  
+  char buffer[10];
+  knee_amp.toCharArray(buffer, 10);
+  float fKnee_amp = atof(buffer);
+  memset(buffer, 0, sizeof(buffer));
+  
+  afreq.toCharArray(buffer, 10);
+  float fAfreq = atof(buffer);
+  memset(buffer, 0, sizeof(buffer));
+  
+  phase.toCharArray(buffer, 10);
+  float fPhase = atof(buffer);
+  memset(buffer, 0, sizeof(buffer));
+  
+  gait.toCharArray(buffer, 10);
+  float fGait = atof(buffer);
+  memset(buffer, 0, sizeof(buffer));
+  
+  int iF_offset = f_offset.toInt();
+  int iB_offset = b_offset.toInt();
+  int iFk_offset = fk_offset.toInt();
+  int iBk_offset = bk_offset.toInt();
+  
   //determine joint positions
-  pos[0] = int(amp) * sin(float(afreq)*t) + 1500 + int(f_offset)
-  pos[1] = int(amp) * sin(float(afreq)*t) + 1522 - int(f_offset)
-  pos[2] = int(amp) * sin(float(afreq)*t + float(gait)) + 1500 + int(b_offset)
-  pos[3] = int(amp) * sin(float(afreq)*t + float(gait)) + 1446 - int(b_offset)
+  pos[0] = iAmp * sin(fAfreq*t) + 1500 + iF_offset;
+  pos[1] = iAmp * sin(fAfreq*t) + 1522 - iF_offset;
+  pos[2] = iAmp * sin(fAfreq*t + fGait) + 1500 + iB_offset;
+  pos[3] = iAmp * sin(fAfreq*t + fGait) + 1446 - iB_offset;
  
-  pos[4] = int(amp)*float(knee_amp) * sin(float(afreq)*t + float(phase)) + 1500 + int(fk_offset)
-  pos[5] = int(amp)*float(knee_amp) * sin(float(afreq)*t + float(phase)) + 1581 - int(fk_offset)
-  pos[6] = int(amp)*float(knee_amp) * sin(float(afreq)*t + float(gait) + float(phase)) + 1500 + int(bk_offset)
-  pos[7] = int(amp)*float(knee_amp) * sin(float(afreq)*t + float(gait) + float(phase)) + 1538 - int(bk_offset)
+  pos[4] = iAmp*fKnee_amp * sin(fAfreq*t + fPhase) + 1500 + iFk_offset;
+  pos[5] = iAmp*fKnee_amp * sin(fAfreq*t + fPhase) + 1581 - iFk_offset;
+  pos[6] = iAmp*fKnee_amp * sin(fAfreq*t + fGait + fPhase) + 1500 + iBk_offset;
+  pos[7] = iAmp*fKnee_amp * sin(fAfreq*t + fGait + fPhase) + 1538 - iBk_offset;
   
   //get time in milliseconds
   unsigned long currentMillis = millis();

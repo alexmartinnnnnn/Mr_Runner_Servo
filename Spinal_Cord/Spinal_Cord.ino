@@ -1,12 +1,6 @@
 #include <Servo.h>
 
 Servo SB, SF, HB, HF, EB, EF, KB, KF;
-String readString, amp, knee_amp, afreq, gait, phase, f_offset, b_offset, fk_offset, bk_offset;
-char pos[] = {0,1,2,3,4,5,6,7,8};
-
-unsigned long previousMillis = 0;
-unsigned int sine_time = 0.05;
-unsigned int t = 0;
 
 void setup(){
   //Start serial stream at 115200 baud
@@ -26,7 +20,12 @@ void setup(){
 }
 
 void loop(){
-  char c;
+  char c, buffer[10], pos[] = {0,1,2,3,4,5,6,7,8};
+  int iAmp, iF_offset, iB_offset, iFk_offset, iBk_offset;
+  float fKnee_amp, fAfreq, fPhase, fGait;
+  String readString, amp, knee_amp, afreq, gait, phase, f_offset, b_offset, fk_offset, bk_offset;
+  unsigned long previousMillis = 0;
+  unsigned int sine_time = 0.05, t = 0;
     
   while (Serial.available() && readString.length() < 38){
     //delay to allow buffer to fill
@@ -67,6 +66,30 @@ void loop(){
     Serial.print(fk_offset);
     Serial.println(bk_offset);
     */
+    
+    iAmp = amp.toInt();
+  
+    knee_amp.toCharArray(buffer, 10);
+    fKnee_amp = atof(buffer);
+    memset(buffer, 0, sizeof(buffer));
+  
+    afreq.toCharArray(buffer, 10);
+    fAfreq = atof(buffer);
+    memset(buffer, 0, sizeof(buffer));
+  
+    phase.toCharArray(buffer, 10);
+    fPhase = atof(buffer);
+    memset(buffer, 0, sizeof(buffer));
+  
+    gait.toCharArray(buffer, 10);
+    fGait = atof(buffer);
+    memset(buffer, 0, sizeof(buffer));
+  
+    iF_offset = f_offset.toInt();
+    iB_offset = b_offset.toInt();
+    iFk_offset = fk_offset.toInt();
+    iBk_offset = bk_offset.toInt();
+    
     //clear strings
     readString="";
     amp="";
@@ -79,30 +102,6 @@ void loop(){
     fk_offset="";
     bk_offset="";
   }
-  
-  int iAmp = amp.toInt();
-  
-  char buffer[10];
-  knee_amp.toCharArray(buffer, 10);
-  float fKnee_amp = atof(buffer);
-  memset(buffer, 0, sizeof(buffer));
-  
-  afreq.toCharArray(buffer, 10);
-  float fAfreq = atof(buffer);
-  memset(buffer, 0, sizeof(buffer));
-  
-  phase.toCharArray(buffer, 10);
-  float fPhase = atof(buffer);
-  memset(buffer, 0, sizeof(buffer));
-  
-  gait.toCharArray(buffer, 10);
-  float fGait = atof(buffer);
-  memset(buffer, 0, sizeof(buffer));
-  
-  int iF_offset = f_offset.toInt();
-  int iB_offset = b_offset.toInt();
-  int iFk_offset = fk_offset.toInt();
-  int iBk_offset = bk_offset.toInt();
   
   //determine joint positions
   pos[0] = iAmp * sin(fAfreq*t) + 1500 + iF_offset;

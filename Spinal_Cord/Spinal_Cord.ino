@@ -7,9 +7,10 @@ positions for each joint of the robot.
 #include <Servo.h>
 
 Servo SB, SF, HB, HF, EB, EF, KB, KF;
-int pos[] = {0,1,2,3,4,5,6,7};
+int iAmp, iF_offset, iB_offset, iFk_offset, iBk_offset, pos[] = {0,1,2,3,4,5,6,7};
 unsigned int t = 0;
 unsigned long previousMillis = 0;
+float fKnee_amp, fAfreq, fPhase, fGait;
 
 void setup(){
   //Start serial stream at 115200 baud
@@ -31,9 +32,7 @@ void setup(){
 void loop(){
   char c, buffer[10];
   String readString, amp, knee_amp, afreq, gait, phase, f_offset, b_offset, fk_offset, bk_offset;
-  int iAmp, iF_offset, iB_offset, iFk_offset, iBk_offset,
   unsigned int sine_time = 0.05;
-  float fKnee_amp, fAfreq, fPhase, fGait;
     
   while (Serial.available() && readString.length() < 37){
     //delay to allow buffer to fill
@@ -81,7 +80,7 @@ void loop(){
     memset(buffer, 0, sizeof(buffer));
   
     afreq.toCharArray(buffer, 10);
-    fAfreq = atof(buffer);
+    fAfreq = atof(buffer)/100;
     memset(buffer, 0, sizeof(buffer));
   
     phase.toCharArray(buffer, 10);
@@ -122,7 +121,7 @@ void loop(){
     pos[5] = iAmp*fKnee_amp * sin(fAfreq*t + fPhase) + 1581 - iFk_offset;
     pos[6] = iAmp*fKnee_amp * sin(fAfreq*t + fGait + fPhase) + 1500 + iBk_offset;
     pos[7] = iAmp*fKnee_amp * sin(fAfreq*t + fGait + fPhase) + 1538 - iBk_offset;
-    
+    /*
     //print parameter variables
     Serial.println(iAmp); 
     Serial.println(fKnee_amp); 
@@ -143,7 +142,7 @@ void loop(){
     Serial.println(pos[5]);
     Serial.println(pos[6]);
     Serial.println(pos[7]);
-    
+    */
     //get time in milliseconds
     unsigned long currentMillis = millis();
   

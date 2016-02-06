@@ -64,7 +64,7 @@ class Mr_Runner:
     self.s_knee_amp.set(1)
     self.s_knee_amp.pack()
 
-    self.s_afreq = Scale(master, from_=0, to=2, orient=HORIZONTAL, sliderlength=50, length=200, resolution=0.01, label="Angular Frequency", command=self.set_afreq)
+    self.s_afreq = Scale(master, from_=0, to=3, orient=HORIZONTAL, sliderlength=50, length=200, resolution=0.01, label="Angular Frequency", command=self.set_afreq)
     self.s_afreq.set(0)
     self.s_afreq.pack()
 
@@ -154,11 +154,9 @@ class Mr_Runner:
       
         elif (self.pos[i] < 100 and self.pos[i] > 10):
           self.pos[i] = '00' + str(int(self.pos[i]))
-          print 'q'
       
         elif (self.pos[i] < 10 and self.pos[i] >= 0):
           self.pos[i] = '000' + str(int(self.pos[i]))
-          print 'w'
     
         elif (self.pos[i] < 0 and self.pos[i] > -10):
           self.pos[i] = '-00' + str(abs(int(self.pos[i])))
@@ -168,7 +166,6 @@ class Mr_Runner:
     	  
         else:
           self.pos[i] = str(int(self.pos[i]))
-          print 'e'
 
         #store old sine parameters for comparison next loop
         for i in range(0, 9):

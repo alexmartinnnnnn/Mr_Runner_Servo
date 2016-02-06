@@ -1,10 +1,15 @@
+/*
+This is a program that recieves sine wave parameters from a serial connection in a single string.
+The string is parsed and converted into numbers, which are plugged into 8 sine equations to generate
+positions for each joint of the robot.
+*/
+
 #include <Servo.h>
 
 Servo SB, SF, HB, HF, EB, EF, KB, KF;
-int iAmp, iF_offset, iB_offset, iFk_offset, iBk_offset, pos[] = {0,1,2,3,4,5,6,7};
+int pos[] = {0,1,2,3,4,5,6,7};
 unsigned int t = 0;
 unsigned long previousMillis = 0;
-float fKnee_amp, fAfreq, fPhase, fGait;
 
 void setup(){
   //Start serial stream at 115200 baud
@@ -26,7 +31,9 @@ void setup(){
 void loop(){
   char c, buffer[10];
   String readString, amp, knee_amp, afreq, gait, phase, f_offset, b_offset, fk_offset, bk_offset;
+  int iAmp, iF_offset, iB_offset, iFk_offset, iBk_offset,
   unsigned int sine_time = 0.05;
+  float fKnee_amp, fAfreq, fPhase, fGait;
     
   while (Serial.available() && readString.length() < 37){
     //delay to allow buffer to fill
@@ -40,11 +47,11 @@ void loop(){
   }
 
   if (readString.length() > 36){
-    //See what was received
+    //see what was received
     Serial.println("The string is: " + readString);
     Serial.println(readString.length()); 
     
-    //Parse serial string into separate parameters
+    //parse serial string into separate parameters
     amp = readString.substring(0, 3);
     knee_amp = readString.substring(3, 7); 
     afreq = readString.substring(7, 11); 
@@ -66,6 +73,7 @@ void loop(){
     Serial.println("Fk Offset: " + fk_offset);
     Serial.println("Bk Offset: " + bk_offset + "\n");
     */
+    //convert string values to numbers
     iAmp = amp.toInt();
   
     knee_amp.toCharArray(buffer, 10);
@@ -102,6 +110,7 @@ void loop(){
     bk_offset="";
   }
   
+  //if the joints should be oscillating
   if (fAfreq > 0){
     //determine joint positions
     pos[0] = iAmp * sin(fAfreq*t) + 1500 + iF_offset;
@@ -114,17 +123,7 @@ void loop(){
     pos[6] = iAmp*fKnee_amp * sin(fAfreq*t + fGait + fPhase) + 1500 + iBk_offset;
     pos[7] = iAmp*fKnee_amp * sin(fAfreq*t + fGait + fPhase) + 1538 - iBk_offset;
     
-    Serial.println(pos[0]);
-    Serial.println(pos[1]);
-    Serial.println(pos[2]);
-    Serial.println(pos[3]);
-    Serial.println(pos[4]);
-    Serial.println(pos[5]);
-    Serial.println(pos[6]);
-    Serial.println(pos[7]);
-    
-     
-    //Print to serial monitor to see parsed results
+    //print parameter variables
     Serial.println(iAmp); 
     Serial.println(fKnee_amp); 
     Serial.println(fAfreq); 
@@ -135,7 +134,16 @@ void loop(){
     Serial.println(iFk_offset);
     Serial.println(iBk_offset);
     
-   
+    //print servo positions
+    Serial.println(pos[0]);
+    Serial.println(pos[1]);
+    Serial.println(pos[2]);
+    Serial.println(pos[3]);
+    Serial.println(pos[4]);
+    Serial.println(pos[5]);
+    Serial.println(pos[6]);
+    Serial.println(pos[7]);
+    
     //get time in milliseconds
     unsigned long currentMillis = millis();
   

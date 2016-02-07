@@ -8,16 +8,20 @@ import serial
 import time
 import math
 
-#serial port for botboard communication
-bb = serial.Serial('/dev/rfcomm0', 115200)	
-print(bb.name)
-
-########################################################################################################################
-###########################################           MR RUNNER CLASS            #######################################
-########################################################################################################################
+###############################################################################################################################
+###########################################           MR RUNNER CLASS            ##############################################
+###############################################################################################################################
 
 class Mr_Runner:
   def __init__(self, master):
+    #serial port for botboard communication
+    self.bb = serial.Serial('/dev/rfcomm0', 115200)	
+    print(self.bb.name)
+
+    #serial port for treadmill communication
+    self.tm = serial.Serial('/dev/rfcomm1', 115200)
+    print(self.tm.name)
+
     #serial string
     self.pos = [0,1,2,3,4,5,6,7,8]
     self.pos_old = [0,1,2,3,4,5,6,7,8]
@@ -28,8 +32,12 @@ class Mr_Runner:
     #timer control
     self.t_time = 0.05 
 
-    #create parameter change flag
-    self.flag = 0
+    #for treadmill control
+    self.set_speed = 0
+    self.set_speed_old = 0
+ 
+    #create parameter change flags
+    self.bb_flag = 0
 
     #create GUI
     self.frame = Frame(master)
@@ -84,6 +92,13 @@ class Mr_Runner:
     self.s_boffset.set(108)
     self.s_boffset.pack()
     
+    #treadmill buttons
+    self.increase = Button(master, text="Faster", command=self.increase_speed)
+    self.increase.pack()
+    
+    self.decrease = Button(master, text="Slower", command=self.decrease_speed)
+    self.decrease.pack()
+    
   #change "gait" variable based on button selected from the gui
   def walk_button(self, event):
     self.pos[4] = '1.571'
@@ -118,14 +133,20 @@ class Mr_Runner:
 
   def set_knee_amp(self, event):
     self.pos[1] = event
+    
+  def increase_speed(self, event):
+    self.set_speed += 1
+    
+  def decrease_speed(self, event):
+    self.set_speed -= 1
 
   #format and transmit serial data
   def transmit(self):
     for i in range(0, 9):
       if (self.pos[i] != self.pos_old[i]):
-        self.flag = 1
+        self.bb_flag = 1
 
-    if (self.flag == 1):
+    if (self.bb_flag == 1):
       self.pos[0] = int(self.pos[0])
       self.pos[5] = int(self.pos[5]) 
       self.pos[6] = int(self.pos[6])
@@ -172,19 +193,23 @@ class Mr_Runner:
           self.pos_old[i] = self.pos[i]
 
         #reset flag
-        self.flag = 0      
+        self.bb_flag = 0      
      
       #print sine parameters to console
       #transmit sine parameters over serial connection
       #bb.write('%s%s%s%s%s%s%s%s%s\n' % (hip_amp, knee_amp, afreq, phase, gait, f_offset, b_offset, fk_offset, bk_offset))
       print('%s %s %s %s %s %s %s %s %s\n' % (self.pos[0],self.pos[1],self.pos[2],self.pos[3],self.pos[4],self.pos[5],self.pos[6],self.pos[7],self.pos[8]))
-      bb.write('%s%s%s%s%s%s%s%s%s\n' % (self.pos[0],self.pos[1],self.pos[2],self.pos[3],self.pos[4],self.pos[5],self.pos[6],self.pos[7],self.pos[8]))
+      self.bb.write('%s%s%s%s%s%s%s%s%s\n' % (self.pos[0],self.pos[1],self.pos[2],self.pos[3],self.pos[4],self.pos[5],self.pos[6],self.pos[7],self.pos[8]))
+      
+    if (self.set_speed != self.set_speed_old):
+      self.tm.write('%s' % self.set_speed)
+      self.set_speed_old = self.set_speed
        
     root.after(int(self.t_time*1000),self.transmit)
     
-#########################################################################################################################
-#######################################               MAIN PROGRAM             ##########################################
-#########################################################################################################################
+##############################################################################################################################
+########################################                MAIN PROGRAM             #############################################
+##############################################################################################################################
    
 root = Tk()
 root.wm_title("Gait Generator")

@@ -24,6 +24,8 @@ void loop(){
     digitalWrite(UD, LOW);
     digitalWrite(CLK, LOW);
     digitalWrite(CLK, HIGH);
+    
+    set_speed_old = set_speed;
   }
   
   else if(set_speed < set_speed_old){
@@ -31,6 +33,8 @@ void loop(){
     digitalWrite(UD, HIGH);
     digitalWrite(CLK, LOW);
     digitalWrite(CLK, HIGH);
+    
+    set_speed_old = set_speed;
   }
     
   else {
